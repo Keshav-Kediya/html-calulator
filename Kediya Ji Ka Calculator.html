@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kediya Ji Ka Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3effa;--card:#fff;--key:#ece6fa;--keyh:#e0d7f5;--sci:#e6def8;--scit:#4b3a96;--text:#1d1538;--muted:#6c6190;--acc:#f0a100;--accink:#2a1a00;--accbg:rgba(240,161,0,.16);--accfg:#8a5a00;--eq:#0f9d8a;--eqink:#fff;--bad:#c4304a;--line:rgba(29,21,56,.1);--shadow:0 20px 50px rgba(75,58,150,.18);color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17122b;--card:#211a3d;--key:#2d2552;--keyh:#392f69;--sci:#271f49;--scit:#c9bfff;--text:#f4efff;--muted:#9d92c7;--acc:#ffb627;--accink:#2a1a00;--accbg:rgba(255,182,39,.15);--accfg:#ffc656;--eq:#2dd4bf;--eqink:#04211d;--bad:#ff6b81;--line:rgba(255,255,255,.08);--shadow:0 24px 60px rgba(0,0,0,.45);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17122b;--card:#211a3d;--key:#2d2552;--keyh:#392f69;--sci:#271f49;--scit:#c9bfff;--text:#f4efff;--muted:#9d92c7;--acc:#ffb627;--accink:#2a1a00;--accbg:rgba(255,182,39,.15);--accfg:#ffc656;--eq:#2dd4bf;--eqink:#04211d;--bad:#ff6b81;--line:rgba(255,255,255,.08);--shadow:0 24px 60px rgba(0,0,0,.45);color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:'Sora',system-ui,sans-serif;display:flex;justify-content:center;align-items:flex-start;padding:20px 14px 32px}
+.wrap{width:100%;max-width:410px}
+.toran{height:12px;margin:0 6px;background:radial-gradient(circle at 50% 0,var(--acc) 6px,transparent 6.5px) 0 0/18px 12px repeat-x}
+h1{font-family:'Rozha One',Georgia,serif;font-weight:400;font-size:clamp(1.7rem,7.5vw,2.2rem);text-align:center;margin:8px 0 18px;color:var(--acc);letter-spacing:.01em;line-height:1.15}
+.card{position:relative;background:var(--card);border-radius:26px;padding:14px;box-shadow:var(--shadow);border:1px solid var(--line);overflow:hidden}
+.bar{display:flex;align-items:center;justify-content:space-between;min-height:30px}
+.badge{font-size:.72rem;font-weight:600;color:var(--accfg);background:var(--accbg);padding:3px 9px;border-radius:99px;visibility:hidden}
+.badge.on{visibility:visible}
+.tools{display:flex;gap:6px}
+.tool{border:0;background:var(--key);color:var(--text);height:30px;min-width:30px;padding:0 10px;border-radius:10px;font:600 .78rem 'Sora',sans-serif;cursor:pointer}
+.tool:hover{background:var(--keyh)}
+.screen{padding:8px 6px 14px;text-align:right;min-height:104px;display:flex;flex-direction:column;justify-content:flex-end;gap:4px}
+.ex{color:var(--muted);font-size:1rem;min-height:1.4em;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.ex::-webkit-scrollbar{display:none}
+.main{font-size:2.7rem;font-weight:600;line-height:1.1;overflow-x:auto;white-space:nowrap;scrollbar-width:none;cursor:copy;font-variant-numeric:tabular-nums}
+.main.m{font-size:2rem}.main.s{font-size:1.4rem}
+.main.err{font-size:1.05rem;color:var(--bad);white-space:normal;cursor:default;font-weight:600}
+.grid{display:grid;gap:8px;margin-top:2px}
+.g5{grid-template-columns:repeat(5,1fr)}.g4{grid-template-columns:repeat(4,1fr);margin-top:8px}
+button.k{border:0;border-radius:14px;height:50px;background:var(--key);color:var(--text);font:600 1.1rem 'Sora',sans-serif;cursor:pointer;transition:background .15s,transform .08s}
+button.k:hover{background:var(--keyh)}
+button.k:active{transform:scale(.94)}
+button.k:focus-visible,.tool:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.sci{background:var(--sci);color:var(--scit);font-size:.88rem;height:44px}
+.sci.on{background:var(--acc);color:var(--accink)}
+.op{background:var(--accbg);color:var(--accfg);font-size:1.4rem}
+.eq{background:var(--eq);color:var(--eqink);font-size:1.5rem}
+.eq:hover{background:var(--eq);filter:brightness(1.08)}
+.ac{color:var(--bad)}
+.hist{position:absolute;inset:0;background:var(--card);padding:14px;display:flex;flex-direction:column;z-index:5}
+.hist[hidden]{display:none}
+.hist h2{margin:0;font-size:1rem}
+.hh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.hl{flex:1;overflow:auto;display:flex;flex-direction:column;gap:6px}
+.hi{all:unset;box-sizing:border-box;cursor:pointer;padding:10px 12px;border-radius:12px;background:var(--key);text-align:right}
+.hi:hover{background:var(--keyh)}.hi:focus-visible{outline:3px solid var(--acc)}
+.hi small{display:block;color:var(--muted);font-size:.8rem;overflow-wrap:anywhere}
+.hi b{font-size:1.15rem}
+.empty{color:var(--muted);text-align:center;margin:auto;font-size:.95rem;padding:0 20px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--text);color:var(--bg);padding:9px 16px;border-radius:99px;font-size:.85rem;opacity:0;pointer-events:none;transition:.2s}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.hint{text-align:center;color:var(--muted);font-size:.75rem;margin-top:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="toran" aria-hidden="true"></div>
+  <h1>Kediya Ji Ka Calculator</h1>
+  <div class="card">
+    <div class="bar">
+      <span class="badge" id="mem">M</span>
+      <div class="tools">
+        <button class="tool" id="hbtn" aria-label="Open history">History</button>
+        <button class="tool" id="tbtn" aria-label="Switch light or dark theme">Theme</button>
+      </div>
+    </div>
+    <div class="screen" aria-live="polite">
+      <div class="ex" id="ex"></div>
+      <div class="main" id="main" title="Click to copy">0</div>
+    </div>
+    <div class="grid g5" id="g5"></div>
+    <div class="grid g4" id="g4"></div>
+    <section class="hist" id="hist" hidden aria-label="History">
+      <div class="hh"><h2>History</h2><div class="tools"><button class="tool" id="hclr">Clear all</button><button class="tool" id="hcls">Close</button></div></div>
+      <div class="hl" id="hl"></div>
+    </section>
+  </div>
+  <div class="hint">Keyboard works too: digits, + − * / ^ ( ) ! %, Enter to calculate, Backspace, Esc to clear.</div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+const $=s=>document.querySelector(s);
+const OPS='+−×÷^';
+let expr='',fresh=false,inv=false,deg=true,mem=0,hist=[],err='',lastExpr='',lastPrev='0';
+try{hist=JSON.parse(localStorage.getItem('kediya-hist')||'[]')}catch(e){hist=[]}
+
+const D=[
+ {l:'MC',k:'mc',c:'sci'},{l:'MR',k:'mr',c:'sci'},{l:'M+',k:'mp',c:'sci'},{l:'M−',k:'mm',c:'sci'},{l:'⌫',k:'bk',c:'sci'},
+ {l:'INV',k:'inv',c:'sci'},{l:'DEG',k:'deg',c:'sci'},{l:'sin',l2:'sin⁻¹',k:'fn',t:'sin(',t2:'asin(',c:'sci'},{l:'cos',l2:'cos⁻¹',k:'fn',t:'cos(',t2:'acos(',c:'sci'},{l:'tan',l2:'tan⁻¹',k:'fn',t:'tan(',t2:'atan(',c:'sci'},
+ {l:'ln',l2:'eˣ',k:'fn',t:'ln(',t2:'exp(',c:'sci'},{l:'log',l2:'10ˣ',k:'fn',t:'log(',t2:'10^(',c:'sci'},{l:'√',l2:'∛',k:'fn',t:'sqrt(',t2:'cbrt(',c:'sci'},{l:'x²',l2:'x³',k:'post',t:'^2',t2:'^3',c:'sci'},{l:'xʸ',k:'op',t:'^',c:'sci'},
+ {l:'π',k:'const',t:'π',c:'sci'},{l:'e',k:'const',t:'e',c:'sci'},{l:'n!',k:'post',t:'!',c:'sci'},{l:'1/x',k:'post',t:'^(−1)',c:'sci'},{l:'%',k:'post',t:'%',c:'sci'}
+];
+const M=[
+ {l:'AC',k:'ac',c:'ac'},{l:'(',k:'open',t:'('},{l:')',k:'close',t:')'},{l:'÷',k:'op',t:'÷',c:'op'},
+ {l:'7',k:'num',t:'7'},{l:'8',k:'num',t:'8'},{l:'9',k:'num',t:'9'},{l:'×',k:'op',t:'×',c:'op'},
+ {l:'4',k:'num',t:'4'},{l:'5',k:'num',t:'5'},{l:'6',k:'num',t:'6'},{l:'−',k:'op',t:'−',c:'op'},
+ {l:'1',k:'num',t:'1'},{l:'2',k:'num',t:'2'},{l:'3',k:'num',t:'3'},{l:'+',k:'op',t:'+',c:'op'},
+ {l:'±',k:'sign'},{l:'0',k:'num',t:'0'},{l:'.',k:'num',t:'.'},{l:'=',k:'eq',c:'eq'}
+];
+function build(id,arr,off){$(id).innerHTML=arr.map((d,i)=>`<button class="k ${d.c||''}" data-i="${i+off}" type="button"></button>`).join('')}
+build('#g5',D,0);build('#g4',M,D.length);
+const ALL=[...D,...M];
+function labels(){document.querySelectorAll('button.k').forEach(b=>{const d=ALL[+b.dataset.i];let t=d.l;if(d.k==='deg')t=deg?'DEG':'RAD';else if(inv&&d.l2)t=d.l2;b.textContent=t;b.title=t;b.setAttribute('aria-label',t);if(d.k==='inv')b.classList.toggle('on',inv)})}
+
+/* ---------- evaluator (no eval) ---------- */
+const snap=v=>Math.abs(v)<1e-12?0:Math.round(v*1e12)/1e12;
+function fact(n){if(n<0||!Number.isInteger(n))throw new Error('Factorial needs a whole number, 0 or more');if(n>170)throw new Error('Number too large');let r=1;for(let i=2;i<=n;i++)r*=i;return r}
+function fn(name,x){
+  const r=deg?x*Math.PI/180:x,back=v=>deg?v*180/Math.PI:v;
+  switch(name){
+    case'sin':return snap(Math.sin(r));case'cos':return snap(Math.cos(r));
+    case'tan':if(Math.abs(Math.cos(r))<1e-12)throw new Error('tan is undefined here');return snap(Math.tan(r));
+    case'asin':case'acos':if(Math.abs(x)>1)throw new Error('Enter a value between −1 and 1');return snap(back(name==='asin'?Math.asin(x):Math.acos(x)));
+    case'atan':return snap(back(Math.atan(x)));
+    case'ln':if(x<=0)throw new Error('ln needs a number above 0');return Math.log(x);
+    case'log':if(x<=0)throw new Error('log needs a number above 0');return Math.log10(x);
+    case'sqrt':if(x<0)throw new Error('Square root of a negative number');return Math.sqrt(x);
+    case'cbrt':return Math.cbrt(x);case'exp':return Math.exp(x);case'abs':return Math.abs(x);
+  }
+  throw new Error('Unknown function '+name);
+}
+function evaluate(src){
+  let open=0;for(const ch of src){if(ch==='(')open++;else if(ch===')')open--}
+  if(open<0)throw new Error('Extra ) found');
+  src+=')'.repeat(open);
+  const re=/(\d+\.?\d*|\.\d+|[a-zA-Zπ]+|[+\-−×÷*\/^()!%])/y,T=[];let m;
+  while(re.lastIndex<src.length){if(!(m=re.exec(src)))throw new Error('Unexpected character');T.push(m[1])}
+  let p=0;const peek=()=>T[p];
+  const start=t=>t!==undefined&&(/^[\d.a-zA-Zπ]/.test(t)||t==='(');
+  const need=c=>{if(T[p++]!==c)throw new Error('Missing '+c)};
+  function exp_(){let[v]=term();while(['+','−','-'].includes(peek())){const o=T[p++];let[r,pc]=term();if(pc)r=v*r/100;v=o==='+'?v+r:v-r}return v}
+  function term(){let v=unary(),n=1;while(['×','÷','*','/'].includes(peek())||start(peek())){
+    if(start(peek())){v*=unary()}else{const o=T[p++],r=unary();if(o==='÷'||o==='/'){if(r===0)throw new Error('Cannot divide by zero');v/=r}else v*=r}n++}
+    return[v,n===1&&T[p-1]==='%']}
+  function unary(){if(peek()==='−'||peek()==='-'){p++;return-unary()}if(peek()==='+'){p++;return unary()}return power()}
+  function power(){const b=post();if(peek()==='^'){p++;return Math.pow(b,unary())}return b}
+  function post(){let v=prim();while(peek()==='!'||peek()==='%'){v=T[p++]==='!'?fact(v):v/100}return v}
+  function prim(){
+    const t=T[p++];if(t===undefined)throw new Error('Expression is incomplete');
+    if(/^[\d.]/.test(t))return parseFloat(t);
+    if(t==='('){const v=exp_();need(')');return v}
+    const n=t.toLowerCase();
+    if(n==='π'||n==='pi')return Math.PI;
+    if(n==='e'&&peek()!=='(')return Math.E;
+    if(peek()==='('){p++;const a=exp_();need(')');return fn(n,a)}
+    throw new Error('Unexpected '+t);
+  }
+  const v=exp_();if(p<T.length)throw new Error('Unexpected '+T[p]);return v;
+}
+function fmt(n){
+  if(!isFinite(n))throw new Error('Result is undefined');
+  let s=parseFloat(n.toPrecision(12));if(s===0)s=0;const a=Math.abs(s);
+  if(a!==0&&(a>=1e15||a<1e-6)){const[m,e]=s.toExponential().split('e');return(m+'×10^'+e.replace('+','').replace('-','−')).replace('-','−')}
+  return String(s).replace('-','−');
+}
+
+/* ---------- input ---------- */
+function input(tok,kind){
+  err='';
+  if(fresh){fresh=false;if(['num','fn','const','open'].includes(kind)){expr='';lastExpr=''}}
+  const last=expr.slice(-1);
+  if(/^\d/.test(tok)&&kind!=='num'&&/[\d.]$/.test(expr))expr+='×';
+  if(kind==='num'){
+    const n=expr.match(/[\d.]*$/)[0];
+    if(tok==='.'){if(n.includes('.'))return;if(n==='')tok='0.'}
+    else if(n==='0'){expr=expr.slice(0,-1)}
+    expr+=tok;
+  }else if(kind==='op'){
+    if(expr===''||last==='('){if(tok==='−')expr+=tok;return upd()}
+    if(OPS.includes(last)){if(tok==='−'&&'×÷^'.includes(last)&&!OPS.includes(expr.slice(-2,-1)))expr+=tok;else expr=expr.replace(/[+−×÷^]+$/,'')+tok}
+    else expr+=tok;
+  }else if(kind==='post'){
+    if(!/[\d)!%πe]$/.test(expr))return upd();expr+=tok;
+  }else if(kind==='close'){
+    const o=(expr.match(/\(/g)||[]).length-(expr.match(/\)/g)||[]).length;
+    if(o<=0||OPS.includes(last)||last==='(')return upd();expr+=tok;
+  }else expr+=tok;
+  upd();
+}
+function equals(){
+  if(!expr)return;
+  try{const r=fmt(evaluate(expr));hist.unshift({e:expr,r});hist=hist.slice(0,50);save();lastExpr=expr;expr=r;fresh=true;err=''}
+  catch(e){err=e.message}
+  upd();
+}
+function back(){
+  err='';fresh=false;
+  const m=expr.match(/(a?sin|a?cos|a?tan|ln|log|sqrt|cbrt|exp)\($/);
+  expr=m?expr.slice(0,-m[0].length):expr.slice(0,-1);upd();
+}
+function clearAll(){expr='';fresh=false;err='';lastExpr='';lastPrev='0';upd()}
+function sign(){
+  err='';
+  if(fresh){fresh=false;lastExpr='';expr=expr.startsWith('−')?expr.slice(1):'−'+expr}
+  else if(/\(−(\d*\.?\d+)\)$/.test(expr))expr=expr.replace(/\(−(\d*\.?\d+)\)$/,'$1');
+  else if(/(\d*\.?\d+)$/.test(expr))expr=expr.replace(/(\d*\.?\d+)$/,'(−$1)');
+  else return input('−','op');
+  upd();
+}
+function cur(){try{return evaluate(expr||'0')}catch(e){toast('Finish the expression first');return null}}
+function memOp(k){
+  if(k==='mc')mem=0;
+  else if(k==='mr'){input(mem<0?'(−'+fmt(-mem)+')':fmt(mem),'const');return}
+  else{const v=cur();if(v===null)return;mem+=k==='mp'?v:-v}
+  toast(k==='mc'?'Memory cleared':'Memory: '+fmt(mem));upd();
+}
+function save(){try{localStorage.setItem('kediya-hist',JSON.stringify(hist))}catch(e){}}
+
+/* ---------- render ---------- */
+function upd(){
+  const ex=$('#ex'),mn=$('#main');
+  $('#mem').classList.toggle('on',mem!==0);
+  mn.classList.remove('err');
+  let shown;
+  if(err){ex.textContent=expr;shown=err;mn.classList.add('err')}
+  else if(fresh){ex.textContent=lastExpr?lastExpr+' =':'';shown=expr}
+  else{
+    ex.textContent=expr;
+    if(!expr){shown='0';lastPrev='0'}
+    else if(/^[\d.]+$/.test(expr)){shown=expr;lastPrev=expr}
+    else{try{lastPrev=fmt(evaluate(expr))}catch(e){}shown=lastPrev}
+  }
+  mn.textContent=shown;
+  mn.className='main'+(mn.classList.contains('err')||err?' err':'')+(!err&&shown.length>14?' s':!err&&shown.length>9?' m':'');
+  ex.scrollLeft=ex.scrollWidth;
+}
+function renderHist(){
+  $('#hl').innerHTML=hist.length?hist.map((h,i)=>`<button class="hi" data-h="${i}"><small>${h.e}</small><b>${h.r}</b></button>`).join(''):'<div class="empty">No calculations yet. Your answers will show up here.</div>';
+}
+let tt;function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),1400)}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button.k');if(!b)return;
+  const d=ALL[+b.dataset.i],t=inv&&d.t2?d.t2:d.t;
+  switch(d.k){
+    case'num':case'op':case'post':case'fn':case'const':case'open':case'close':input(t,d.k);if(d.k==='fn'&&inv){inv=false;labels()}break;
+    case'eq':equals();break;case'ac':clearAll();break;case'bk':back();break;case'sign':sign();break;
+    case'inv':inv=!inv;labels();break;case'deg':deg=!deg;labels();upd();break;
+    default:memOp(d.k);
+  }
+});
+$('#main').addEventListener('click',()=>{if(err)return;const t=$('#main').textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Copied '+t),()=>toast('Copy not available here'))});
+$('#hbtn').onclick=()=>{renderHist();$('#hist').hidden=false};
+$('#hcls').onclick=()=>$('#hist').hidden=true;
+$('#hclr').onclick=()=>{hist=[];save();renderHist()};
+$('#hl').addEventListener('click',e=>{const b=e.target.closest('[data-h]');if(!b)return;const h=hist[+b.dataset.h];expr=h.r;lastExpr=h.e;fresh=true;err='';$('#hist').hidden=true;upd()});
+$('#tbtn').onclick=()=>{const r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.dataset.theme=dark?'light':'dark'};
+
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey||e.metaKey||e.altKey||!$('#hist').hidden&&e.key!=='Escape')return;
+  const k=e.key;
+  if(/^[0-9.]$/.test(k))input(k,'num');
+  else if(k==='+')input('+','op');else if(k==='-')input('−','op');
+  else if(k==='*'||k==='x'||k==='X')input('×','op');else if(k==='/')input('÷','op');else if(k==='^')input('^','op');
+  else if(k==='(')input('(','open');else if(k===')')input(')','close');
+  else if(k==='!'||k==='%')input(k,'post');
+  else if(k==='Enter'||k==='='){e.preventDefault();equals()}
+  else if(k==='Backspace')back();else if(k==='Escape'||k==='Delete'){$('#hist').hidden=true;if(k!=='Escape')clearAll()}
+  else if(k==='p')input('π','const');
+  else return;
+  if(k===' ')e.preventDefault();
+});
+labels();upd();
+</script>
+</body>
+</html>
