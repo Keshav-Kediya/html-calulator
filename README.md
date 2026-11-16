@@ -1,1 +1,1 @@
-# html-calulator
+# HTML-Calulator
